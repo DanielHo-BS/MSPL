@@ -44,7 +44,8 @@ Show three images:
 * Binary-Otsu image
 
 ```bash
-./binary <binary_fit>
+#./binary <binary_fit>
+./binary 100
 ```
 
 ## Histogram
@@ -74,5 +75,6 @@ Show five images:
 * Closing
 
 ```bash
-./morphology <kernel size(3 ,5 ,7, ..., 2N+1)>
+#./morphology <kernel size(3 ,5 ,7, ..., 2N+1)>
+./morphology 5
 ```
