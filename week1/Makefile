@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named morphology
+
+# Build rule for target.
+morphology: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 morphology
+.PHONY : morphology
+
+# fast build rule for target.
+morphology/fast:
+	$(MAKE) -f CMakeFiles/morphology.dir/build.make CMakeFiles/morphology.dir/build
+.PHONY : morphology/fast
+
+#=============================================================================
 # Target rules for targets named plotHis
 
 # Build rule for target.
@@ -203,6 +216,33 @@ histogram.cpp.s:
 	$(MAKE) -f CMakeFiles/histogram.dir/build.make CMakeFiles/histogram.dir/histogram.cpp.s
 .PHONY : histogram.cpp.s
 
+morphology.o: morphology.cpp.o
+
+.PHONY : morphology.o
+
+# target to build an object file
+morphology.cpp.o:
+	$(MAKE) -f CMakeFiles/morphology.dir/build.make CMakeFiles/morphology.dir/morphology.cpp.o
+.PHONY : morphology.cpp.o
+
+morphology.i: morphology.cpp.i
+
+.PHONY : morphology.i
+
+# target to preprocess a source file
+morphology.cpp.i:
+	$(MAKE) -f CMakeFiles/morphology.dir/build.make CMakeFiles/morphology.dir/morphology.cpp.i
+.PHONY : morphology.cpp.i
+
+morphology.s: morphology.cpp.s
+
+.PHONY : morphology.s
+
+# target to generate assembly for a file
+morphology.cpp.s:
+	$(MAKE) -f CMakeFiles/morphology.dir/build.make CMakeFiles/morphology.dir/morphology.cpp.s
+.PHONY : morphology.cpp.s
+
 plotHis.o: plotHis.cpp.o
 
 .PHONY : plotHis.o
@@ -237,6 +277,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... morphology"
 	@echo "... rebuild_cache"
 	@echo "... plotHis"
 	@echo "... histogram"
@@ -247,6 +288,9 @@ help:
 	@echo "... histogram.o"
 	@echo "... histogram.i"
 	@echo "... histogram.s"
+	@echo "... morphology.o"
+	@echo "... morphology.i"
+	@echo "... morphology.s"
 	@echo "... plotHis.o"
 	@echo "... plotHis.i"
 	@echo "... plotHis.s"
