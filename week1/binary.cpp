@@ -4,8 +4,8 @@
 using namespace std;
 using namespace cv;
 
-int main(int argc, char** argv){
-    
+int main(int argc, char** argv)
+{    
     //Read the image
     Mat image, fitImage, otsuImage;
     image = imread("images/lena.png", 0);
@@ -102,6 +102,5 @@ int main(int argc, char** argv){
     imwrite("images/fit.png", fitImage);
     imwrite("images/otsu.png", otsuImage);
     
-
     return 0;
 }
