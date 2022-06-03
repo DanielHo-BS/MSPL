@@ -4,11 +4,13 @@
 using namespace std;
 using namespace cv;
 
-int main(){
+int main(int argc, char** argv){
     
     //Read the image
-    Mat image;
-    image = imread("lena.png", 0);
+    Mat image, fitImage, otsuImage;
+    image = imread("images/lena.png", 0);
+    fitImage = image.clone();
+    otsuImage = image.clone();
     long double N = image.rows * image.cols;
     
     //Initialize variables
@@ -53,22 +55,53 @@ int main(){
         }
     }
     
-    // Build the segmented image
-    Mat dsImage = image.clone();
-    for (int y = 0; y < dsImage.rows; y++)
+    // Build the binary-fit image
+    if ( argc != 2 )
     {
-        for (int x = 0; x < dsImage.cols; x++)
+        printf("usage: ./binary <binary_fit>\n");
+        return -1;
+    }
+    int fit;
+    fit =  atoi(argv[1]);
+
+    for (int y = 0; y < fitImage.rows; y++)
+    {
+        for (int x = 0; x < fitImage.cols; x++)
         {      
-            if (image.at<uchar>(y,x) > threshold)
-                dsImage.at<uchar>(y,x) = 255;
+            if (fitImage.at<uchar>(y,x) > fit)
+                fitImage.at<uchar>(y,x) = 255;
             else
-                dsImage.at<uchar>(y,x) = 0;
+                fitImage.at<uchar>(y,x) = 0;
         }
     }
 
+    // Build the binary-otsu image
+    for (int y = 0; y < otsuImage.rows; y++)
+    {
+        for (int x = 0; x < otsuImage.cols; x++)
+        {      
+            if (otsuImage.at<uchar>(y,x) > threshold)
+                otsuImage.at<uchar>(y,x) = 255;
+            else
+                otsuImage.at<uchar>(y,x) = 0;
+        }
+    }
+    
+    // Show images
     namedWindow("Image", WINDOW_AUTOSIZE );
-    imshow("Image", dsImage);
+    imshow("Image", image);
+
+    namedWindow("Fit", WINDOW_AUTOSIZE );
+    imshow("Fit", fitImage);
+    
+    namedWindow("Otsu", WINDOW_AUTOSIZE );
+    imshow("Otsu", otsuImage);
     waitKey(0);
+
+    // Save images
+    imwrite("images/fit.png", fitImage);
+    imwrite("images/otsu.png", otsuImage);
+    
 
     return 0;
 }
