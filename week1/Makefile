@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/daniel/MSPL/week1
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -109,6 +109,32 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+#=============================================================================
+# Target rules for targets named plotHis
+
+# Build rule for target.
+plotHis: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 plotHis
+.PHONY : plotHis
+
+# fast build rule for target.
+plotHis/fast:
+	$(MAKE) -f CMakeFiles/plotHis.dir/build.make CMakeFiles/plotHis.dir/build
+.PHONY : plotHis/fast
+
+#=============================================================================
+# Target rules for targets named histogram
+
+# Build rule for target.
+histogram: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 histogram
+.PHONY : histogram
+
+# fast build rule for target.
+histogram/fast:
+	$(MAKE) -f CMakeFiles/histogram.dir/build.make CMakeFiles/histogram.dir/build
+.PHONY : histogram/fast
 
 #=============================================================================
 # Target rules for targets named binary
@@ -150,18 +176,80 @@ binary.cpp.s:
 	$(MAKE) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/binary.cpp.s
 .PHONY : binary.cpp.s
 
+histogram.o: histogram.cpp.o
+
+.PHONY : histogram.o
+
+# target to build an object file
+histogram.cpp.o:
+	$(MAKE) -f CMakeFiles/histogram.dir/build.make CMakeFiles/histogram.dir/histogram.cpp.o
+.PHONY : histogram.cpp.o
+
+histogram.i: histogram.cpp.i
+
+.PHONY : histogram.i
+
+# target to preprocess a source file
+histogram.cpp.i:
+	$(MAKE) -f CMakeFiles/histogram.dir/build.make CMakeFiles/histogram.dir/histogram.cpp.i
+.PHONY : histogram.cpp.i
+
+histogram.s: histogram.cpp.s
+
+.PHONY : histogram.s
+
+# target to generate assembly for a file
+histogram.cpp.s:
+	$(MAKE) -f CMakeFiles/histogram.dir/build.make CMakeFiles/histogram.dir/histogram.cpp.s
+.PHONY : histogram.cpp.s
+
+plotHis.o: plotHis.cpp.o
+
+.PHONY : plotHis.o
+
+# target to build an object file
+plotHis.cpp.o:
+	$(MAKE) -f CMakeFiles/plotHis.dir/build.make CMakeFiles/plotHis.dir/plotHis.cpp.o
+.PHONY : plotHis.cpp.o
+
+plotHis.i: plotHis.cpp.i
+
+.PHONY : plotHis.i
+
+# target to preprocess a source file
+plotHis.cpp.i:
+	$(MAKE) -f CMakeFiles/plotHis.dir/build.make CMakeFiles/plotHis.dir/plotHis.cpp.i
+.PHONY : plotHis.cpp.i
+
+plotHis.s: plotHis.cpp.s
+
+.PHONY : plotHis.s
+
+# target to generate assembly for a file
+plotHis.cpp.s:
+	$(MAKE) -f CMakeFiles/plotHis.dir/build.make CMakeFiles/plotHis.dir/plotHis.cpp.s
+.PHONY : plotHis.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... rebuild_cache"
+	@echo "... plotHis"
+	@echo "... histogram"
 	@echo "... binary"
 	@echo "... binary.o"
 	@echo "... binary.i"
 	@echo "... binary.s"
+	@echo "... histogram.o"
+	@echo "... histogram.i"
+	@echo "... histogram.s"
+	@echo "... plotHis.o"
+	@echo "... plotHis.i"
+	@echo "... plotHis.s"
 .PHONY : help
 
 
