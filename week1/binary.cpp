@@ -7,9 +7,9 @@ using namespace cv;
 int main(int argc, char** argv)
 {    
     //Read the image
-    Mat image, fitImage, otsuImage;
+    Mat image, fixedImage, otsuImage;
     image = imread("images/lena.png", 0);
-    fitImage = image.clone();
+    fixedImage = image.clone();
     otsuImage = image.clone();
     long double N = image.rows * image.cols;
     
@@ -64,14 +64,14 @@ int main(int argc, char** argv)
     int fit;
     fit =  atoi(argv[1]);
 
-    for (int y = 0; y < fitImage.rows; y++)
+    for (int y = 0; y < fixedImage.rows; y++)
     {
-        for (int x = 0; x < fitImage.cols; x++)
+        for (int x = 0; x < fixedImage.cols; x++)
         {      
-            if (fitImage.at<uchar>(y,x) > fit)
-                fitImage.at<uchar>(y,x) = 255;
+            if (fixedImage.at<uchar>(y,x) > fit)
+                fixedImage.at<uchar>(y,x) = 255;
             else
-                fitImage.at<uchar>(y,x) = 0;
+                fixedImage.at<uchar>(y,x) = 0;
         }
     }
 
@@ -91,15 +91,15 @@ int main(int argc, char** argv)
     namedWindow("Image", WINDOW_AUTOSIZE );
     imshow("Image", image);
 
-    namedWindow("Fit", WINDOW_AUTOSIZE );
-    imshow("Fit", fitImage);
+    namedWindow("fixedImage", WINDOW_AUTOSIZE );
+    imshow("fixedImage", fixedImage);
     
     namedWindow("Otsu", WINDOW_AUTOSIZE );
     imshow("Otsu", otsuImage);
     waitKey(0);
 
     // Save images
-    imwrite("images/fit.png", fitImage);
+    imwrite("images/fixed.png", fixedImage);
     imwrite("images/otsu.png", otsuImage);
     
     return 0;
