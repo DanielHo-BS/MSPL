@@ -1,3 +1,4 @@
+// Morphology : Erosion, Dilation, Opening, Closing
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 

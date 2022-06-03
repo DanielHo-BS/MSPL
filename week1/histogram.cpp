@@ -1,3 +1,4 @@
+// Histogram Equalization
 #include <stdio.h>
 #include <cmath>
 #include <opencv2/opencv.hpp>
@@ -36,7 +37,7 @@ int main(int argc, char** argv)
         new_histogram[i]=round((((float)curr) * 255) / total);
     }
 
-    // Performing histogram equalisation by mapping new gray levels
+    // Performing histogram equalization by mapping new gray levels
     // Compute the image histogram
     for (int y = 0; y < newImage.rows; y++)
         for (int x = 0; x < newImage.cols; x++)
