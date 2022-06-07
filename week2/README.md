@@ -4,7 +4,7 @@ In this week, the HWs of MSPL:
 
 * Denoise
   * Mean
-  * Meidan
+  * Median
   * Gaussion
 * Edge Detection
   * sobel
