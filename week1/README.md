@@ -30,7 +30,9 @@ cd MSPL/week1
 The code is written in **C++**, so need to use ``CMake`` to compile.
 
 ```bash
-cmake .
+mkdir build
+cd build
+cmake ..
 make
 ```
 
