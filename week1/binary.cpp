@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 {    
     //Read the image
     Mat image, fixedImage, otsuImage;
-    image = imread("images/lena.png", 0);
+    image = imread("../images/lena.png", 0);
     fixedImage = image.clone();
     otsuImage = image.clone();
     long double N = image.rows * image.cols;
@@ -100,8 +100,8 @@ int main(int argc, char** argv)
     waitKey(0);
 
     // Save images
-    imwrite("images/fixed.png", fixedImage);
-    imwrite("images/otsu.png", otsuImage);
+    imwrite("../images/fixed.png", fixedImage);
+    imwrite("../images/otsu.png", otsuImage);
     
     return 0;
 }

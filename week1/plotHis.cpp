@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
   Mat src, dst;
 
-  String imageName( "images/hq.png" ); // by default
+  String imageName( "../images/hq.png" ); // by default
 
   if (argc > 1)
   {

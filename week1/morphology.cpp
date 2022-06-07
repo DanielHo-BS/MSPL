@@ -9,9 +9,9 @@ int main(int argc, char** argv)
 {
     // Read the image
     Mat image;
-    image = imread("images/lena.png", IMREAD_GRAYSCALE);
+    image = imread("../images/lena.png", IMREAD_GRAYSCALE);
 
-        // Build the binary-fit image
+    // Build the binary-fit image
     if ( argc != 2 || (atoi(argv[1])%2) == 0 || atoi(argv[1]) > image.rows || atoi(argv[1]) > image.cols)
     {
         printf("usage: ./morphology <kernel size(3 ,5 ,7, ..., 2N+1)>\n");
@@ -95,10 +95,10 @@ int main(int argc, char** argv)
     waitKey(0);
 
     // Save image
-    imwrite("images/dilatedImage.png", dilatedImage);
-    imwrite("images/erodedImage.png", erodedImage);
-    imwrite("images/openImage.png", openImage);
-    imwrite("images/closeImage.png", closeImage);
+    imwrite("../images/dilatedImage.png", dilatedImage);
+    imwrite("../images/erodedImage.png", erodedImage);
+    imwrite("../images/openImage.png", openImage);
+    imwrite("../images/closeImage.png", closeImage);
 
     return 0;
 

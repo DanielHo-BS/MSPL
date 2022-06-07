@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
     // Read the image
     Mat image, newImage;
-    image = imread("images/lena.png", 0);
+    image = imread("../images/lena.png", 0);
     newImage = image.clone();
     // Initialize variables
     int max_intensity = 255;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     waitKey(0);
 
     // Save image
-    imwrite("images/hq.png", newImage);
+    imwrite("../images/hq.png", newImage);
 
     return 0;
 }
