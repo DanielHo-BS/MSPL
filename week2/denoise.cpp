@@ -1,6 +1,7 @@
-// Denoise
+// Denoise: Mean, Median, Gaussian
 #include <stdio.h>
 #include <ctime>
+#include <cmath>
 #include "opencv2/opencv.hpp"
 
 using namespace std;
@@ -56,6 +57,52 @@ void medianFilter(Mat &src, Mat &dst, int kernel)
     }
 }
 
+// Gaussian Filter
+
+void gaussianFilter(Mat &src, Mat &dst, int kernel, double sigma= 0.84089642)
+{
+    // Initialise values
+    double GKernel[2*kernel+1][2*kernel+1];
+    double r, s=2.0 * sigma * sigma;
+    double sum=0.0;
+
+    // Generate the gaussian kernel
+    for (int y = 0; y < (2*kernel+1); y++)
+    {
+        for (int x = 0; x < (2*kernel+1); x++)
+        {
+            r = ((x-kernel)*(x-kernel)+(y-kernel)*(y-kernel));
+            GKernel[y][x] = (exp(-r/s)) / (M_PI * s);
+            sum += GKernel[y][x];
+        }
+    }
+
+    // Normalize the kernel
+    for (int y = 0; y < (2*kernel+1); y++)
+        for (int x = 0; x < (2*kernel+1); x++)
+            {GKernel[y][x] /= sum;
+            //cout << GKernel[y][x]<<endl;
+            }
+    
+    // Convolution image with GKernel
+    for (int y = 0; y < src.rows; y++)
+    {
+        for (int x = 0; x < src.cols; x++)
+        {
+            if ((y-kernel >= 0)&&(x-kernel >= 0)&&(y+kernel < src.rows)&&(x+kernel < src.cols))
+            {
+                // Convolution
+                double sum = 0;
+                for (int k1 = 0; k1 < (2*kernel+1); k1++)
+                    for (int k2 = 0; k2 < (2*kernel+1); k2++)
+                        sum += (double)src.at<uchar>(y-kernel+k1, x-kernel+k2)*GKernel[k1][k2];  
+                dst.at<uchar>(y,x)=sum;
+            }
+        }  
+    }
+                    
+}
+
 // Salt the image
 void salt(Mat &image, int num)
 {
@@ -95,18 +142,25 @@ int main(int argc, char** argv)
     // Median Filter
     Mat medianImage = image.clone();
     medianFilter(saltImage, medianImage, kernel);
+    
+    // Gaussian Filter
+    Mat gaussianImage = image.clone();
+    gaussianFilter(saltImage, gaussianImage, kernel);
+    
 
     // Show images
     imshow("Original",image);
     imshow("Salt",saltImage);
     imshow("Mean",meanImage);
     imshow("Median",medianImage);
+    imshow("Gaussian",gaussianImage);
     waitKey();
     
     // Save images
     imwrite("../images/salt.png", saltImage);
     imwrite("../images/mean.png", meanImage);
     imwrite("../images/median.png", medianImage);
+    imwrite("../images/gaussian.png", gaussianImage);
     
     return 0;
 }
