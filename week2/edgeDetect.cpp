@@ -57,7 +57,7 @@ void addImage(Mat &src1, Mat &src2,Mat &dst)
 {
     for (int y = 0; y < dst.rows; y++)
         for (int x = 0; x < dst.cols; x++)
-            dst.at<uchar>(y,x)=(src1.at<uchar>(y,x) + src2.at<uchar>(y,x)) / 2;
+            dst.at<uchar>(y,x)=sqrt(pow(src1.at<uchar>(y,x),2) + pow(src2.at<uchar>(y,x),2));
 }
 
 // Laplacian  Filter
