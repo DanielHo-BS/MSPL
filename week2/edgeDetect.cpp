@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     // Setting the kernel size
     if ( argc != 2 || (atoi(argv[1])%2) == 0 || atoi(argv[1]) > image.rows || atoi(argv[1]) > image.cols)
     {
-        printf("usage: ./denoise <kernel size(3 ,5 ,7, ..., 2N+1)>\n");
+        printf("usage: ./edgeDetect <kernel size(3 ,5 ,7, ..., 2N+1)>\n");
         return -1;
     }
     int kernel;
