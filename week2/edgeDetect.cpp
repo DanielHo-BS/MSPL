@@ -1,5 +1,4 @@
-// Edge Detect: Sobel, Laplacian and Canny
-// Denoise: Mean, Median, Gaussian
+// Edge Detect: Sobel, Laplacian
 #include <stdio.h>
 #include <cmath>
 #include "opencv2/opencv.hpp"
