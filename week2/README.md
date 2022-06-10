@@ -75,7 +75,7 @@ show four images:
 # ./canny
 ./canny
 # Enter kernel size of gaussian filter(3 ,5 ,7, ..., 2N+1): 5
-# Enter kernel size of sobel filter(3 ,5 ,7, ..., 2N+1): 5
-# Enter kernel size of double thershold(3 ,5 ,7, ..., 2N+1): 5
-# Enter low and high value for double thershold: 60 80
+# Enter kernel size of sobel filter(3 ,5 ,7, ..., 2N+1): 3
+# Enter kernel size of double thershold(3 ,5 ,7, ..., 2N+1): 3
+# Enter low and high value for double thershold: 24 25
 ```
