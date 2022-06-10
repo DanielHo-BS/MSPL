@@ -5,41 +5,39 @@
     * Step 4: Suppress non-maximum edges
 */
 #include <stdio.h>
-#include <ctime>
+#include <unistd.h>
 #include <cmath>
 #include "opencv2/opencv.hpp"
 
 using namespace std;
 using namespace cv;
 
-// Gaussian Filter
-
-void gaussianFilter(Mat &src, Mat &dst, int kernel, double sigma= 0.84089642)
+void gaussianFilter(Mat &src, Mat &dst, int kernel, double sigma= 1.4)
 {
     // Initialise values
     int size = 2 * kernel + 1;
     double GKernel[size][size];
-    double r, s=2.0 * sigma * sigma;
-    double sum=0.0;
+    double r = 0, s=2.0 * sigma * sigma, sum = 0;
 
-    // Generate the gaussian kernel
-    for (int y = 0; y < (size); y++)
+    // Gaussian Kernel
+    for (int i = 0; i < size; i++)
     {
-        for (int x = 0; x < (size); x++)
+        for (int j = 0; j < size; j++)
         {
-            r = ((x-kernel)*(x-kernel)+(y-kernel)*(y-kernel));
-            GKernel[y][x] = (exp(-r/s)) / (M_PI * s);
-            sum += GKernel[y][x];
+            int y = i -kernel, x = j - kernel;
+            r = pow(x,2) + pow(y,2);
+            double normal = 1 / (s * M_PI);
+            GKernel[y][x] = exp(-(r) / s) * normal;
+            sum +=  GKernel[y][x];
         }
     }
-
+    
     // Normalize the kernel
     for (int y = 0; y < size; y++)
         for (int x = 0; x < size; x++)
-            {GKernel[y][x] /= sum;
-            //cout << GKernel[y][x]<<endl;
-            }
-    
+            GKernel[y][x] /= sum;
+
+
     // Convolution image with GKernel
     for (int y = 0; y < src.rows; y++)
     {
@@ -48,25 +46,35 @@ void gaussianFilter(Mat &src, Mat &dst, int kernel, double sigma= 0.84089642)
             if ((y-kernel >= 0)&&(x-kernel >= 0)&&(y+kernel < src.rows)&&(x+kernel < src.cols))
             {
                 // Convolution
-                double sum = 0;
+                sum = 0;
                 for (int k1 = 0; k1 < (size); k1++)
                     for (int k2 = 0; k2 < (size); k2++)
                         sum += (double)src.at<uchar>(y-kernel+k1, x-kernel+k2)*GKernel[k1][k2];  
                 dst.at<uchar>(y,x)=sum;
             }
         }  
-    }                
+    } 
 }
 
-// Sobel Filter
-void sobelKernel(Mat &src, Mat &dst, Mat &dst2, int kernel)
+void sobelFilter(Mat &src, Mat &dst, Mat &dst2,int kernel)
 {
     // Initialise values
     int size= 2 * kernel + 1;
     double Gx[size][size], Gy[size][size];
-    int edgeDir[src.rows][src.cols];
-
-    // Generate sobel kernel
+    double angle[src.rows][src.cols];
+    double G[src.rows][src.cols];
+    double Gmax=0.0;
+    double sum = 0.0, sumX = 0.0, sumY = 0.0;
+    for (int i = 0; i < src.rows; i++)
+    {
+        for (int j = 0; j < src.cols; j++)
+        {
+            angle[j][i] = 0.0;
+            G[j][i] = 0.0;
+        }
+    }
+    
+    // Sobel kernel
     for (int y = 0; y < size; y++)
     {
         for (int x = 0; x < size; x++)
@@ -83,77 +91,76 @@ void sobelKernel(Mat &src, Mat &dst, Mat &dst2, int kernel)
         } 
     }
 
-    // Convolution image with soble kernel
+    // Convolution image with Gx and Gy
     for (int y = 0; y < src.rows; y++)
     {
         for (int x = 0; x < src.cols; x++)
         {
-            double sumx = 0, sumy = 0;
-            double angle = 0;
-            if ((y-kernel >= 0)&&(x-kernel >= 0)&&(y+kernel < src.rows)&&(x+kernel < src.cols))
+            if ((y-kernel > 0)&&(x-kernel > 0)&&(y+kernel < src.rows)&&(x+kernel < src.cols))
             {
                 // Convolution
-                for (int k1 = 0; k1 < size; k1++)
-                {
-                    for (int k2 = 0; k2 < size; k2++)
+                sumX = 0, sumY=0;
+                for (int k1 = 0; k1 < (size); k1++)
+                    for (int k2 = 0; k2 < (size); k2++)
                     {
-                        sumx += src.at<uchar>(y-kernel+k1, x-kernel+k2) * Gx[k1][k2];
-                        sumy += src.at<uchar>(y-kernel+k1, x-kernel+k2) * Gy[k1][k2]; 
-                    }  
-                }         
-                dst2.at<uchar>(y,x) = dst.at<uchar>(y,x) = (int)sqrt(pow(sumx,2) + pow(sumy,2));
-                angle = (atan2(sumx,sumy) / M_PI) * 180.0;                     
+                        sumX += src.at<uchar>(y-kernel+k1, x-kernel+k2)*Gx[k1][k2];  
+                        sumY += src.at<uchar>(y-kernel+k1, x-kernel+k2)*Gy[k1][k2];          
+                    }
+                G[y][x] = sqrt(pow(sumX,2) + pow(sumY,2));
+                if (G[y][x] > Gmax)
+                    Gmax = G[y][x];
+                angle[y][x] = (atan2(sumX,sumY) / M_PI) * 180.0;
+                if (angle[y][x] < 0)
+                    angle[y][x] += 180;
             }
-            else
-            {
-                dst2.at<uchar>(y,x) = dst.at<uchar>(y,x)=0;
-                angle = 0;
-            }
-
-            /* Convert actual edge direction to approximate value */
-            if ( ( (angle < 22.5) && (angle > -22.5) ) || (angle > 157.5) || (angle < -157.5) )
-                edgeDir[y][x] = 0;
-            if ( ( (angle > 22.5) && (angle < 67.5) ) || ( (angle < -112.5) && (angle > -157.5) ) )
-                edgeDir[y][x] = 45;
-            if ( ( (angle > 67.5) && (angle < 112.5) ) || ( (angle < -67.5) && (angle > -112.5) ) )
-                edgeDir[y][x] = 90;
-            if ( ( (angle > 112.5) && (angle < 157.5) ) || ( (angle < -22.5) && (angle > -67.5) ) )
-                edgeDir[y][x] = 135;
         }  
     }
+    
+    // Normalize
+    for (int y = 0; y <  src.rows; y++)
+        for (int x = 0; x <  src.cols; x++)
+                dst.at<uchar>(y,x) = (uchar)(G[y][x]  * (255/Gmax));
 
-    // Non-maximum suppression
+            
+           
+    // Non Max Suppression
     for (int y = 0; y < src.rows; y++)
     {
         for (int x = 0; x < src.cols; x++)
         {
             if ((y-kernel >= 0)&&(x-kernel >= 0)&&(y+kernel < src.rows)&&(x+kernel < src.cols))
-                switch (edgeDir[y][x])
+            {
+                int q = 255, r = 255;
+                if ((0 <= angle[y][x] < 22.5) || (157.5 <= angle[y][x] <= 180))
                 {
-                case 0:
-                    if ((dst.at<uchar>(y,x) < dst.at<uchar>(y,x-1))||(dst.at<uchar>(y,x) < dst.at<uchar>(y,x+1)))
-                        dst2.at<uchar>(y,x)=0;
-                    break;
-
-                case 45:
-                    if ((dst.at<uchar>(y,x) < dst.at<uchar>(y+1,x-1))||(dst.at<uchar>(y,x) < dst.at<uchar>(y-1,x+1)))
-                        dst2.at<uchar>(y,x)=0;
-                    break;
-
-                case 90:
-                    if ((dst.at<uchar>(y,x) < dst.at<uchar>(y-1,x))||(dst.at<uchar>(y,x) < dst.at<uchar>(y+1,x)))
-                        dst2.at<uchar>(y,x)=0;
-                    break;
-
-                case 135:
-                if ((dst.at<uchar>(y,x) < dst.at<uchar>(y-1,x-1))||(dst.at<uchar>(y,x) < dst.at<uchar>(y+1,x+1)))
-                        dst2.at<uchar>(y,x)=0;
-                    break;
+                    q = dst.at<uchar>(y,x+1);
+                    r = dst.at<uchar>(y,x-1);
                 }
+                else if ((22.5 <= angle[y][x]) && (angle[y][x] < 67.5))
+                {
+                    q = dst.at<uchar>(y+1,x-1);
+                    r = dst.at<uchar>(y-1,x+1);
+                }
+                else if ((67.5 <= angle[y][x]) && (angle[y][x] < 112.5))
+                {
+                    q = dst.at<uchar>(y+1,x);
+                    r = dst.at<uchar>(y-1,x);
+                }
+                else if ((112.5 <= angle[y][x]) && (angle[y][x] < 157.5))
+                {
+                    q = dst.at<uchar>(y-1,x-1);
+                    r = dst.at<uchar>(y+1,x+1);
+                }
+
+                if ((dst.at<uchar>(y,x) >= q) && (dst.at<uchar>(y,x) >= r))
+                    dst2.at<uchar>(y,x) = dst.at<uchar>(y,x);
+                else
+                    dst2.at<uchar>(y,x) = 0;
+            }
+            else
+                dst2.at<uchar>(y,x) = 0;
         }
-        
     }
-    
 }
 
 // double thershold
@@ -184,17 +191,20 @@ void db_thershold(Mat &src, Mat &dst, int kernel,int low, int high)
                     }
                     if (!edge) G[y][x] = 0;
                 }
-                dst.at<uchar>(y,x)=dst.at<uchar>(y,x-1)=dst.at<uchar>(y,x+1)=G[y][x];
+                dst.at<uchar>(y,x) = G[y][x];
             }
         }  
     }      
 }
 
-
 int main(int argc, char** argv)
 {
     // Read the image
     Mat image = imread("../images/lena.png",0);
+    Mat gaussianImage = image.clone();
+    Mat sobelImage = image.clone();
+    Mat suppressionImage = image.clone();
+    Mat dbImage = suppressionImage.clone();
     
     // Gaussian
     int kernel;
@@ -206,9 +216,8 @@ int main(int argc, char** argv)
             return -1;
         }
     kernel =  (kernel-1)/2;
-    Mat gaussianImage = image.clone();
     gaussianFilter(image, gaussianImage, kernel);
-    
+
     // Sobel
     printf("Enter kernel size of sobel filter(3 ,5 ,7, ..., 2N+1): ");
     scanf("%d",&kernel);
@@ -218,9 +227,7 @@ int main(int argc, char** argv)
             return -1;
         }
     kernel =  (kernel-1)/2;
-    Mat sobelImage = image.clone();
-    Mat suppressionImage = image.clone();
-    sobelKernel(gaussianImage, sobelImage, suppressionImage, kernel);
+    sobelFilter(gaussianImage, sobelImage, suppressionImage, kernel);
 
     // Double thershold
     printf("Enter kernel size of double thershold(3 ,5 ,7, ..., 2N+1): ");
@@ -231,7 +238,6 @@ int main(int argc, char** argv)
             return -1;
         }
     kernel =  (kernel-1)/2;
-    Mat dbImage = suppressionImage.clone();
     int low=0, high=0;
     printf("Enter low and high value for double thershold: ");
     scanf("%d %d",&low, &high);
@@ -243,16 +249,18 @@ int main(int argc, char** argv)
     db_thershold(suppressionImage, dbImage, kernel, low, high);
     
     // Show images
-    imshow("Original",image);
+    /*imshow("Original",image);
     imshow("Gaussian", gaussianImage);
     imshow("Sobel", sobelImage);
     imshow("Suppression", suppressionImage);
     imshow("Double thershold", dbImage);
-    waitKey();
+    waitKey();*/
     
     // Save images
     imwrite("../images/1-gaussian.png", gaussianImage);
     imwrite("../images/2-sobel.png", sobelImage);
     imwrite("../images/3-suppression.png", suppressionImage);
     imwrite("../images/4-dbThershold.png", dbImage);
+
+    return 0;
 }
